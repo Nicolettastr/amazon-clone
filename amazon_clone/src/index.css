@@ -1,9 +1,21 @@
+@import url('https://fonts.cdnfonts.com/css/amazon-ember');
+
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    font-family: 'Amazon Ember', sans-serif;
 }
 
-.header_logo {
-    width: 150px;
+:root {
+    --darkGrey: #232f3e;
+}
+
+.d_flex {
+    display: flex;
+}
+
+
+.d_none {
+    display: none;
 }
