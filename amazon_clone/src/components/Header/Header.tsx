@@ -1,95 +1,66 @@
-import { useEffect, useState } from 'react';
-import './header.css'
-import { MdOutlineShoppingBasket } from 'react-icons/md';
-import { AiOutlineMenu } from 'react-icons/ai'
+import { useEffect, useState } from "react";
+import Logo from "../Logo/logo";
+import "./header.css";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { MdOutlineShoppingBasket } from "react-icons/md";
+import HeaderOptions from "./HeaderOptions";
 
-const Header= () => {
-
-    const [itemsInBag] = useState(0);
-    const [windowWidth, setWindowWIdth] = useState(window.innerWidth);
-    const [showOptionsInMovil, setShowOptionsInMovil] = useState(false)
-
-    const handleResize = () => {
-        setWindowWIdth(window.innerWidth)
-    }
-
-    const navOptions = [
-        {
-            title: 'Sign in',
-            subtitle: 'Hello'
-        },
-        {
-            title: '& Orders',
-            subtitle: 'Returns'
-        },
-        {
-            title: 'Prime',
-            subtitle: 'Your'
-        },
-        {
-            title: itemsInBag,
-            subtitle: <MdOutlineShoppingBasket/>,
-            item: 'shoppingBag'
-        }
-    ];
-
-    const handleShowOptions = () => {
-        setShowOptionsInMovil(!showOptionsInMovil)
-    }
-
-    useEffect(() => {
-        handleResize(),
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.addEventListener('resize', handleResize);
-        }
-    }, [windowWidth])
-
-    const showOptions = navOptions.map((item) => {
-        return (
-            <div key={Math.floor(Math.random() * 1000000)} className={item.item ? 'header_shoppingBag header_option' : 'header_option'}>
-                <h5 className="optionSubtitle">{item.subtitle}</h5>
-                <h3 className="optionTitle">{item.title}</h3>
-            </div>
-        )
-    })
-
-    const showOptionsInMovilList = navOptions.map((item) => {
-        if(!item.item) {
-            return (
-                <li key={Math.floor(Math.random() * 215423)}>
-                    {`${item.subtitle} ${item.title}`}
-                </li>
-            )
-        }
-    })
-
-  return (
-    <div className="header d_flex">
-        <figure className='header_imgContainer'>
-            <img className="header_logo" src="http://pngimg.com/uploads/amazon/amazon_PNG11.png" alt="" />
-        </figure>
-        <div className={windowWidth <= 450 ? 'd_none' : 'header_search'}>
-            <input className="header_searchInput" type="text" />
-        </div>
-        <div className="header_nav">
-            {windowWidth <= 450 ? 
-               <div className='d_flex shoppingBagMovilOptions'>
-                    <button onClick={handleShowOptions}>
-                        <AiOutlineMenu/>
-                        {showOptionsInMovil ? 
-                            <ul>
-                                {showOptionsInMovilList}
-                            </ul>
-                            : ''
-                            }
-                    </button> 
-                    {showOptions[showOptions.length -1]}
-               </div>
-               : showOptions }
-        </div>
-    </div>
-  )
+interface NavOptions {
+  title?: string | number;
+  subtitle?: React.ReactNode;
+  item?: string | undefined;
 }
 
-export default Header
+interface HeaderOptions {
+  navOptions: NavOptions[];
+  onClick: () => void;
+}
+
+const Header: React.FC<HeaderOptions> = ({ navOptions, onClick }) => {
+  const [width, setWidth] = useState(window.innerWidth);
+  const updateDimesions = () => {
+    setWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", updateDimesions);
+    return () => window.removeEventListener("resize", updateDimesions);
+  }, []);
+
+  const showNavOptions = navOptions.map((option) => {
+    return (
+      <HeaderOptions
+        title={option.title}
+        subtitle={option.subtitle}
+        item={option.item}
+      />
+    );
+  });
+
+  const bag = navOptions.map((option) => {
+    if (option.item) {
+      return (
+        <span className="header_movilBag">
+          <MdOutlineShoppingBasket />
+          <span className="header_itemsInBag">{option.title}</span>
+        </span>
+      );
+    }
+  });
+
+  return (
+    <section className="header_container">
+      <Logo />
+      {width <= 500 ? (
+        <span className="header_menu" onClick={onClick}>
+          <GiHamburgerMenu />
+          {bag}
+        </span>
+      ) : (
+        <>{showNavOptions}</>
+      )}
+    </section>
+  );
+};
+
+export default Header;
